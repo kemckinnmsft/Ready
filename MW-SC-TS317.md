@@ -29,7 +29,7 @@ This lab is designed to be completed on Windows 10 VM with the following charact
 
 - Windows 10 Enterprise
 - Office 365 ProPlus
-- Azure Information Protection v2 Preview Unified Client (1.38.7.0)
+- Azure Information Protection v2 Preview Unified Client (2.0.185.0)
 
 Microsoft 365 E5 Tenant credentials will be provided during the event.  If you want to run through this lab after the event, you may use a tenant created through https://demos.microsoft.com or your own Microsoft 365 Tenant. This Lab Guide will be publicly available after the event at https://aka.ms/AIPHOL2.
 
@@ -82,43 +82,6 @@ There are a few prerequisites that need to be set up to complete all the section
 - [Redeem Azure Pass](#redeem-azure-pass)
 
 - [Workplace Join Clients](#workplace-join-clients)
-
-===
-# Azure AD Connect Configuration
-
-In this task, we will install Azure AD Connect and configure it using the express settings.
-
-1. [] Log into @lab.VirtualMachine(Scanner01).SelectLink by clicking @lab.CtrlAltDelete and using the credentials below:
-
-	+++LabUser+++
-
-	+++Pa$$w0rd+++
-
-2. [] On the desktop, **double-click** on **Azure AD Connect**.
-3. [] When prompted, click **Yes** to continue.
-5. [] On the Express Settings page, click **Use express settings**.
-6. [] On the Connect to Azure AD page, enter the credentials below and press the **Next** button.
-
-	+++@lab.CloudCredential(17).Username+++
-
-	+++@lab.CloudCredential(17).Password+++
-
-> [!NOTE] The wizard will connect to the Microsoft Online tenant to verify the credentials.
-
-7. [] On the Connect to AD DS page, enter the credentials below then click the **Next** button.
-
-	+++Contoso.Azure\LabUser+++
-
-	+++Pa$$w0rd+++
-8. [] On the Azure AD sign-in page, **check the box** next to **Continue without any verified domains** and click the **Next** button.
-
-> [!NOTE] Verified domains are primarily for SSO purposes and are not needed for this lab
-
-9. [] On the Configure page, click the **Install** button.
-
-> [!ALERT] **Do not** uncheck the box for initial synchronization
-
-10. [] Continue to next task while initial sync is running.
 
 ===
 # Redeem Azure Pass
@@ -177,44 +140,6 @@ For several of the exercises in this lab series, you will require an active subs
 
 1. [] When you are redirected to the Azure Portal, the process is complete.
 ===
-# Assign User Licenses
-
-In this task, we will assign licenses to users that have been synced to the Office 365 portal.
-
-1. [] In a new tab, navigate to +++https://admin.microsoft.com/AdminPortal/Home#/homepage+++.
-
-	> [!KNOWLEDGE] If needed, log in using the credentials below:
-	>
-	>+++@lab.CloudCredential(17).Username+++
-	>
-	>+++@lab.CloudCredential(17).Password+++
-
-1. [] In the middle of the homepage, click on **Active users >**.
-
-	> [!NOTE] If there are only 2 users in the portal, the sync has not completed.  Switch to @lab.VirtualMachine(Scanner01).SelectLink to verify the progress. Once it shows complete, return to @lab.VirtualMachine(Client01).SelectLink and refresh the page to verify the users are now present.
-
-2. [] Check the box to select all users and click **Edit product licenses**.
-
-	!IMAGE[tpq0eb7f.jpg](\Media\tpq0eb7f.jpg)
-1. [] On the Assign products page, click **Next**.
-
-	!IMAGE[nzzweacz.jpg](\Media\nzzweacz.jpg)
-1. [] On the Replace existing products page, turn on licenses for **Enterprise Mobility + Security E5** and **Office 365 Enterprise E5** and click **Replace**.
-
-	^IMAGE[Open Screenshot](\Media\9xomkr35.jpg)
-	
-	> [!KNOWLEDGE] If there are no licenses available for Office 365 Enterprise E5, check the box next to Remove all product licenses... and click Replace. Wait for that to complete, then check the boxes next to only the accounts listed in the table below and repeat the steps above to assign the licenses.
-	>
-	> |Users|
-	> |-----|
-	> |Adam Smith|
-	> |AIPScanner|
-	> |Alice Anderson|
-	> |Evan Green|
-    > |MOD Administrator|
-    > |Nuck Chorris|
-
-===
 # Workplace Join Clients
 
 In this task, we will join 3 systems to the Azure AD tenant to provide SSO capabilities in Office.
@@ -226,41 +151,9 @@ In this task, we will join 3 systems to the Azure AD tenant to provide SSO capab
 
 1. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
 
-	+++AdamS@@lab.CloudCredential(17).TenantName+++
+	+++@lab.CloudCredential(17).Username+++
 
-	+++pass@word1+++
-1. [] Click **Done**.
-1. [] Log into @lab.VirtualMachine(Client02).SelectLink by pressing @lab.CtrlAltDelete and using the credentials below:
-
-	+++LabUser+++
-
-	+++Pa$$w0rd+++
-1. [] Right-click on the start menu and click **Run**.
-1. [] In the Run dialog, type +++ms-settings:workplace+++ and click **OK**.
-
-	>!IMAGE[mssettings.png](\Media\mssettings.png)
-
-1. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
-
-	+++AliceA@@lab.CloudCredential(17).TenantName+++
-
-	+++pass@word1+++
-1. [] Click **Done**.
-1. [] Log into @lab.VirtualMachine(Client03).SelectLink by pressing @lab.CtrlAltDelete and using the credentials below:
-
-	+++LabUser+++
-
-	+++Pa$$w0rd+++
-1. [] Right-click on the start menu and click **Run**.
-1. [] In the Run dialog, type +++ms-settings:workplace+++ and click **OK**.
-
-	>!IMAGE[mssettings.png](\Media\mssettings.png)
-
-1. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
-
-	+++EvanG@@lab.CloudCredential(17).TenantName+++
-
-	+++pass@word1+++
+	+++@lab.CloudCredential(17).Password+++ 
 1. [] Click **Done**.
 ===
 # Azure Information Protection
@@ -269,29 +162,12 @@ In this task, we will join 3 systems to the Azure AD tenant to provide SSO capab
 
 > [!ALERT] Please ensure you have completed the steps in the [Lab Environment Configuration](#lab-environment-configuration) before continuing.
 
-There are 2 options for this Lab.  These options contain similar content except for the items called out below.
-
-- The **New to AIP** option will walk through the label and policy creation including scoped policies and demonstrating recommended and automatic labeling in Office applications. This option takes significantly longer and so there is a chance that all sections may not be completed.
-
-- The **Familiar with AIP** option assumes that you are familiar with label and policy creation and that you have seen the operation of conditions in Office applications as these will not be demonstrated.  This option will use the predefined labels and global policy populated in the demo tenants.
-
-Click on one of the options below to begin.
-
-## [New to AIP](#exercise-1-configuring-aip-scanner-for-discovery)
-
-## [Familiar with AIP](#exercise-1a-configuring-aip-scanner-for-discovery)
-
 After completing this lab, you will be able to:
 
 - [Configure the Azure Information Protection scanner to discover sensitive data](#exercise-1-configuring-aip-scanner-for-discovery)
-- [Configure Azure Information Protection labels](#creating-configuring-and-modifying-sub-labels)
-- [Configure Azure Information Protection policies](#configuring-global-policy)
 - [Activate Unified Labeling for the Security and Compliance Center](#exercise-3-security-and-compliance-center)
-- [Classify and protect content with Azure Information Protection in Office applications](#exercise-4-testing-aip-policies)
 - [Classify and protect sensitive data discovered by the AIP Scanner](#configuring-automatic-conditions)
-- [Configure Exchange Online Mail Flow Rules for AIP](#configuring-exchange-online-mail-flow-rules)
-- [Configure SharePoint IRM Libraries (Optional)](#exercise-7-sharepoint-irm-configuration)
-
+- [Use Azure Log Analytics to display centralized reporting for AIP Usage and Data Risk](#)
 ===
 
 # Exercise 1: Configuring AIP Scanner for Discovery
