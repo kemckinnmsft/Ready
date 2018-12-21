@@ -1,8 +1,14 @@
 # Intro
 
+- 3 VMs
+  - ContosoDC
+  - Scanner01
+  - Client01
+
 # Lab Setup
 
 - Redeem Azure Pass
+- Deploy Users to Azure AD
 - Workplace join client
 - MCAS O365 connector
 - Azure Log Analytics Configuration
