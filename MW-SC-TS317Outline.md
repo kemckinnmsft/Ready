@@ -23,7 +23,7 @@
 # Classify and Protect
 
 - Bulk Classification (Manual)
-  - Protect discovered folder C:\PII with Confidential \ All Employees
+  - Protect discovered folder C:\PII with Confidential \ All Employees (Unencrypted)
 - AIP Scanner (Automatic)
 - MCAS (Cloud)
   - Upload PII folder contents to SPO library
