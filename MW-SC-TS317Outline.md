@@ -10,14 +10,10 @@
 - Redeem Azure Pass
 - Deploy Users to Azure AD
 - Workplace join client
-- MCAS O365 connector
-- Azure Log Analytics Configuration
-- AIP Scanner Install
 
 # Discover
 
 - AIP Scanner (On-prem)
-- MCAS (O365)
 
 # Classification Taxonomy
 
