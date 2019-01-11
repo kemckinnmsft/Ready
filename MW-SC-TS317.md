@@ -612,7 +612,7 @@ However, helping your users to properly classify and protect sensitive data at t
 
 In this exercise, we will migrate your AIP Labels and activate them in the Security and Compliance Center.  This will allow you to see the labels in Microsoft Information Protection based clients such as Office 365 for Mac and Mobile Devices.
 
-We will use the Preview AIPv2 Windows Client installed on Client02 to demo these capabilities in this lab.  If you have a Mac system with the insider preview for CLP, you can use the tenant information provided to test on your device.
+We will use the Preview Windows Unified Client installed on Client02 to demo these capabilities in this lab.  If you have a Mac system with the insider preview for CLP, you can use the tenant information provided to test on your device.
 
 ---
 # Activating Unified Labeling
