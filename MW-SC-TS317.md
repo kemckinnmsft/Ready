@@ -670,6 +670,8 @@ In this task, we will perform bulk classification using the built-in functionali
 
 	!IMAGE[CandP2.png](\Media\CandP2.png)
 
+> [!Alert] If you are unable to see the **Apply** button due to screen resolution, click **Alt+A** and **Enter** to apply the label to the content.
+
 > [!NOTE] You may review the results in a text file by clicking show results, or simply close the window.
 ===
 # Classification, Labeling, and Protection with the Azure Information Protection Scanner 🐱‍👤
