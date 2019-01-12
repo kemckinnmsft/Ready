@@ -29,7 +29,7 @@ This lab is designed to be completed on Windows 10 VM with the following charact
 
 - Windows 10 Enterprise
 - Office 365 ProPlus
-- Azure Information Protection v2 Preview Unified Client (2.0.185.0)
+- Azure Information Protection Preview Unified Client (2.0.185.0)
 
 Microsoft 365 E5 Tenant credentials will be provided during the event.  If you want to run through this lab after the event, you may use a tenant created through https://demos.microsoft.com or your own Microsoft 365 Tenant. This Lab Guide will be publicly available after the event at https://aka.ms/AIPHOL2.
 
@@ -94,7 +94,7 @@ In this task, we will create new Azure AD users and assign licenses via PowerShe
 
 1. [] Log into @lab.VirtualMachine(Scanner01).SelectLink using the password +++@lab.VirtualMachine(Client01).Password+++
 2. [] Open a new Administrative PowerShell window and click below to type the code. 
-    
+   
     ```
     $cred = Get-Credential
     ```
@@ -104,7 +104,7 @@ In this task, we will create new Azure AD users and assign licenses via PowerShe
 	```@lab.CloudCredential(17).Username```
 
 	```@lab.CloudCredential(17).Password``` 
-    
+   
 1. [] In the PowerShell window, click on the code below to create users.
 
     ```
@@ -145,26 +145,26 @@ In this task, we will create new Azure AD users and assign licenses via PowerShe
 
     ```
 
-1. [] In the PowerShell window, click the code below to assign Office and EMS licenses.
-	
-	```
-	Start-Sleep -s 15
-	foreach ($user in $users){
+5. [] In the PowerShell window, click the code below to assign Office and EMS licenses.
 
-    # Store UPN created from csv and tenant
-    $upn = $user.username+"@"+$tenantfqdn
-
-    # Assign Office and EMS licenses to users
-    Set-MsolUser -UserPrincipalName $upn -UsageLocation US
-    Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
-    }
-
-    # Assign Office and EMS licenses to Admin user
-    $upn = "admin@"+$tenantfqdn
-    Set-MsolUser -UserPrincipalName $upn -UsageLocation US
-    Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
-
-	```
+   ```
+   Start-Sleep -s 15
+   foreach ($user in $users){
+    
+   # Store UPN created from csv and tenant
+   $upn = $user.username+"@"+$tenantfqdn
+   
+   # Assign Office and EMS licenses to users
+   Set-MsolUser -UserPrincipalName $upn -UsageLocation US
+   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
+   }
+   
+   # Assign Office and EMS licenses to Admin user
+   $upn = "admin@"+$tenantfqdn
+   Set-MsolUser -UserPrincipalName $upn -UsageLocation US
+   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
+   ```
+6. [] Leave the PowerShell window open for the next task.
 
 ---
 # Exchange Mail Flow Rule Removal
@@ -172,33 +172,25 @@ In this task, we will create new Azure AD users and assign licenses via PowerShe
 
 By default, many of the demo tenants provided block external communications via mail flow rule.  As this will hinder many tests in this lab, we will verify if such a rule exists and remove it if necesary.
 
-2. [] Type the commands below to connect to an Exchange Online PowerShell session.  Use the credentials provided when prompted.
+2. [] In the Admin PowerShell window, type the commands below to connect to an Exchange Online PowerShell session.  
 
-	```
-	$UserCredential = Get-Credential
-	```
+  ```
+  $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $cred -Authentication Basic -AllowRedirection
+  Import-PSSession $Session
+  ```
 
-	```@lab.CloudCredential(17).Username```
+3. [] Get the active Mail Flow Rules by typing the command below:
 
-	```@lab.CloudCredential(17).Password```
+  ```
+  Get-TransportRule
+  ```
 
-	```
-	$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $UserCredential -Authentication Basic -AllowRedirection
-	Import-PSSession $Session
-	```
+4. [] If a rule exists named something similar to **"Delete if sent outside the organization"**, run the code below to remove this rule.
 
-1. [] Get the active Mail Flow Rules by typing the command below:
+  ```
+  Remove-TransportRule *Delete*
+  ```
 
-	```
-	Get-TransportRule
-	```
-
-1. [] If a rule exists named something similar to **"Delete if sent outside the organization"**, run the code below to remove this rule.
-
-	```
-	Remove-TransportRule *Delete*
-	```
-	
 ---
 # Redeem Azure Pass
 [:arrow_up: Top](#lab-environment-configuration)
@@ -225,22 +217,25 @@ For several of the exercises in this lab series, you will require an active subs
 1. [] Click **Confirm** if the correct email address is listed.
 
 	!IMAGE[teyx280d.jpg](\Media\teyx280d.jpg)
-1. [] In the Promo code box type ```@lab.CloudCredential(215).PromoCode``` and click the **Claim Promo Code** button.
+7. [] Click in the Promo code box and type ```@lab.CloudCredential(215).PromoCode```, then click the **Claim Promo Code** button.
 
-	!IMAGE[e1l35ko2.jpg](\Media\e1l35ko2.jpg)
-	> [!NOTE] It may take up to 5 minutes to process the redemption.
+  !IMAGE[e1l35ko2.jpg](\Media\e1l35ko2.jpg)
 
-1. [] Scroll to the bottom of the page and click **Next**.
+  > [!NOTE] It may take up to 5 minutes to process the redemption.
 
-	!IMAGE[ihrjazqi.jpg](\Media\ihrjazqi.jpg)
-	> [!NOTE] You can keep the pre-populated information.
+8. [] Scroll to the bottom of the page and click **Next**.
 
-1. [] Check the box to agree to the terms and click **Sign up**.
+  !IMAGE[ihrjazqi.jpg](\Media\ihrjazqi.jpg)
 
-	!IMAGE[k2a97g8e.jpg](\Media\k2a97g8e.jpg)
-	> [!NOTE] It may take a few minutes to process the request.
+  > [!NOTE] You can keep the pre-populated information.
 
-1. [] When you are redirected to the Azure Portal, the process is complete.
+9. [] Check the box to agree to the terms and click **Sign up**.
+
+  !IMAGE[k2a97g8e.jpg](\Media\k2a97g8e.jpg)
+
+  > [!NOTE] It may take a few minutes to process the request.
+
+1. [] While this is processing, you may continue to the next task.
 
 ---
 # Workplace Join Clients
@@ -248,50 +243,65 @@ For several of the exercises in this lab series, you will require an active subs
 
 In this task, we will join 3 systems to the Azure AD tenant to provide SSO capabilities in Office.
 
-1. [] Switch to @lab.VirtualMachine(Client01).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
-2. [] Right-click on the start menu and click **Run**.
-3. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
+1. [] On @lab.VirtualMachine(Client01).SelectLink, right-click on the start menu and click **Run**.
 
-	>!IMAGE[mssettings.png](\Media\mssettings.png)
+2. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
 
-1. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
+  >!IMAGE[mssettings.png](\Media\mssettings.png)
 
-	```AdamS@@lab.CloudCredential(17).TenantName```
+3. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
 
-	```pass@word1```
-1. [] Click **Done**.
-1. [] Switch to @lab.VirtualMachine(Client02).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
-1. [] Right-click on the start menu and click **Run**.
-1. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
+  ```AdamS@@lab.CloudCredential(17).TenantName```
 
-	>!IMAGE[mssettings.png](\Media\mssettings.png)
+  ```pass@word1```
 
-1. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
+4. [] Click **Done**.
 
-	```AliceA@@lab.CloudCredential(17).TenantName```
+5. [] Switch to @lab.VirtualMachine(Client02).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
 
-	```pass@word1```
-1. [] Click **Done**.
-1. [] Switch to @lab.VirtualMachine(Client03).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
-1. [] Right-click on the start menu and click **Run**.
-1. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
+6. [] Right-click on the start menu and click **Run**.
 
-	>!IMAGE[mssettings.png](\Media\mssettings.png)
+7. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
 
-1. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
+  >!IMAGE[mssettings.png](\Media\mssettings.png)
 
-	```EvanG@@lab.CloudCredential(17).TenantName```
+8. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
 
-	```pass@word1```
-1. [] Click **Done**.
+  ```AliceA@@lab.CloudCredential(17).TenantName```
+
+  ```pass@word1```
+
+9. [] Click **Done**.
+
+10. [] Switch to @lab.VirtualMachine(Client03).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
+
+11. [] Right-click on the start menu and click **Run**.
+
+12. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
+
+   >!IMAGE[mssettings.png](\Media\mssettings.png)
+
+13. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
+
+   ```EvanG@@lab.CloudCredential(17).TenantName```
+
+   ```pass@word1```
+
+14. [] Click **Done**.
+
 ===
+
 # Azure Information Protection
 [:arrow_left: Home](#introduction)
-### Objectives
+## Overview
 
-> [!ALERT] Please ensure you have completed the steps in the [Lab Environment Configuration](#lab-environment-configuration) before continuing.
+
+
+## Objectives
 
 This lab assumes that you are familiar with label and policy creation and that you have seen the operation of conditions in Office applications as these will not be demonstrated.  This lab will use the predefined labels and global policy populated in the demo tenants.
+
+
 
 ===
 # Configuring AIP Scanner for Discovery 🐱‍👤
@@ -401,22 +411,23 @@ Now that you have installed the scanner bits, you need to get an Azure AD token 
 	```@lab.CloudCredential(17).Password```
 1. [] Next, click the **T** to **type the commands below** in the PowerShell window and press **Enter**. 
 
-	> [!NOTE] This will create a new Web App Registration, Native App Registration, and associated Service Principals in Azure AD.
+  > [!NOTE] This will create a new Web App Registration, Native App Registration, and associated Service Principals in Azure AD.
 
-   ```
-   New-AzureADApplication -DisplayName AIPOnBehalfOf -ReplyUrls http://localhost
-   $WebApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPOnBehalfOf'"
-   New-AzureADServicePrincipal -AppId $WebApp.AppId
-   $WebAppKey = New-Guid
-   $Date = Get-Date
-   New-AzureADApplicationPasswordCredential -ObjectId $WebApp.ObjectID -startDate $Date -endDate $Date.AddYears(1) -Value $WebAppKey.Guid -CustomKeyIdentifier "AIPClient"
-	
-   $AIPServicePrincipal = Get-AzureADServicePrincipal -All $true | ? {$_.DisplayName -eq 'AIPOnBehalfOf'}
-   $AIPPermissions = $AIPServicePrincipal | select -expand Oauth2Permissions
-   $Scope = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $AIPPermissions.Id,"Scope"
-   $Access = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
-   $Access.ResourceAppId = $WebApp.AppId
-   $Access.ResourceAccess = $Scope
+  ```
+  New-AzureADApplication -DisplayName AIPOnBehalfOf -ReplyUrls http://localhost
+  $WebApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPOnBehalfOf'"
+  New-AzureADServicePrincipal -AppId $WebApp.AppId
+  $WebAppKey = New-Guid
+  $Date = Get-Date
+  New-AzureADApplicationPasswordCredential -ObjectId $WebApp.ObjectID -startDate $Date -endDate $Date.AddYears(1) -Value $WebAppKey.Guid -CustomKeyIdentifier "AIPClient"
+  
+  $AIPServicePrincipal = Get-AzureADServicePrincipal -All $true | ? {$_.DisplayName -eq 'AIPOnBehalfOf'}
+  $AIPPermissions = $AIPServicePrincipal | select -expand Oauth2Permissions
+  $Scope = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $AIPPermissions.Id,"Scope"
+  $Access = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
+  $Access.ResourceAppId = $WebApp.AppId
+  $Access.ResourceAccess = $Scope
+  ```
 
 
    New-AzureADApplication -DisplayName AIPClient -ReplyURLs http://localhost -RequiredResourceAccess $Access -PublicClient $true
@@ -508,18 +519,18 @@ The next task is to configure repositories to scan.  These can be on-premises Sh
     ```
 
 	> [!Knowledge] Note that we used the DiscoverInformationTypes -All switch before starting the scan.  This causes the scanner to use any custom conditions that you have specified for labels in the Azure Information Protection policy, and the list of information types that are available to specify for labels in the Azure Information Protection policy.  Although the scanner will discover documents to classify, it will not do so because the default configuration for the scanner is Discover only mode.
- 	
+	
 1. [] Right-click on the **Windows** button in the lower left-hand corner and click on **Event Viewer**.
- 
+
 	^IMAGE[Open Screenshot](\Media\cjvmhaf0.jpg)
 1. [] Expand **Application and Services Logs** and click on **Azure Information Protection**.
 
 	^IMAGE[Open Screenshot](\Media\dy6mnnpv.jpg)
- 
+
 	>[!NOTE] You will see an event like the one below when the scanner completes the cycle. If you see a .NET exception, press OK. This is due to SharePoint startup in the VM environment.
 	>
 	>!IMAGE[agnx2gws.jpg](\Media\agnx2gws.jpg)
- 
+
 1. [] Next, switch to @lab.VirtualMachine(Client01).SelectLink and log in using the password +++@lab.VirtualMachine(Client01).Password+++.
 1. [] Open a **File Explorer** window, and browse to ```\\Scanner01.contoso.azure\c$\users\aipscanner\AppData\Local\Microsoft\MSIP\Scanner\Reports```.
 
@@ -597,8 +608,9 @@ However, helping your users to properly classify and protect sensitive data at t
 	^IMAGE[Open Screenshot](\Media\ie6g5kta.jpg)
 1. [] In the Labels: All Employees blade, in the **Configure conditions for automatically applying this label** section, click **Automatic**.
 
-	!IMAGE[245lpjvk.jpg](\Media\245lpjvk.jpg)
-	> [!HINT] The policy tip is automatically updated when you switch the condition to Automatic.
+   !IMAGE[245lpjvk.jpg](\Media\245lpjvk.jpg)
+
+   > [!HINT] The policy tip is automatically updated when you switch the condition to Automatic.
 1. [] Click **Save** in the Label: All Employees blade and **OK** to the Save settings prompt.
 
 	^IMAGE[Open Screenshot](\Media\gek63ks8.jpg)
@@ -616,7 +628,7 @@ We will use the Preview Windows Unified Client installed on Client02 to demo the
 
 ---
 # Activating Unified Labeling
- 
+
 In this task, we will activate the labels from the Azure Portal for use in the Security and Compliance Center.
 
 1. [] On @lab.VirtualMachine(Client01).SelectLink, log in with the password +++@lab.VirtualMachine(Client01).Password+++.
@@ -649,6 +661,7 @@ In this task, we will activate the labels from the Azure Portal for use in the S
 
 1. [] Drop-down this menu and view the 
    
+
 ===
 # Bulk Classification with the AIP Client 🐱‍👤
 [:arrow_left: Home](#azure-information-protection)
@@ -688,7 +701,7 @@ In this exercise, we will run the AIP Scanner in enforce mode to classify and pr
 ---
 
 # Enforcing Configured Rules 🐱‍👤
- 
+
 In this task, we will set the AIP scanner to enforce the conditions we set up and have it run on all files using the Start-AIPScan command.
 
 1. [] Switch to @lab.VirtualMachine(Scanner01).SelectLink and log in with the password +++@lab.VirtualMachine(Scanner01).Password+++.
@@ -730,7 +743,7 @@ In this task, we will set the AIP scanner to enforce the conditions we set up an
 Now that we have Classified and Protected documents using the scanner, we can review the documents to see their change in status.
 
 1. [] Switch to @lab.VirtualMachine(Client01).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
- 
+
 2. [] Navigate to ```\\Scanner01.contoso.azure\documents```. 
 
 	> If needed, use the credentials below:
@@ -738,15 +751,15 @@ Now that we have Classified and Protected documents using the scanner, we can re
 	>```Contoso\LabUser```
 	>
 	>```Pa$$w0rd```
- 
+
 	^IMAGE[Open Screenshot](\Media\hipavcx6.jpg)
 3. [] Open one of the Contoso Purchasing Permissions documents or Run For The Cure spreadsheets.
- 
- 	
-	
-	> [!NOTE] Observe that the document is classified as Confidential \ Contoso Internal. 
-	>
-	>!IMAGE[s1okfpwu.jpg](\Media\s1okfpwu.jpg)
+
+
+​	
+​	> [!NOTE] Observe that the document is classified as Confidential \ Contoso Internal. 
+​	>
+​	>!IMAGE[s1okfpwu.jpg](\Media\s1okfpwu.jpg)
 
 ---
 # Reviewing the Dashboards 🐱‍👤
@@ -755,7 +768,8 @@ Now that we have Classified and Protected documents using the scanner, we can re
 We can now go back and look at the dashboards and observe how they have changed.
 
 1. [] On @lab.VirtualMachine(Client01).SelectLink, open the browser that is logged into the Azure Portal.
-	> [!ALERT] Some of the content shown in this dashboard will not be present because we skipped the manual labeling sections.  This content has been left in to show the capabilities of the reports.
+
+  > [!ALERT] Some of the content shown in this dashboard will not be present because we skipped the manual labeling sections.  This content has been left in to show the capabilities of the reports.
 
 1. [] Under **Dashboards**, click on **Usage report (Preview)**.
 
@@ -783,6 +797,7 @@ We can now go back and look at the dashboards and observe how they have changed.
 	>
 	> !IMAGE[discovery2.png](\Media\discovery2.png)
 	
+
 ===
 # Exchange Online IRM Capabilities 🐱‍👤
 [:arrow_left: Home](#azure-information-protection)
@@ -929,7 +944,7 @@ In this task, we will send emails to demonstrate the results of the Exchange Onl
 [:arrow_left: Home](#azure-information-protection)
 
 Congratulations! You have completed the Azure Information Protection Hands on Lab. 
->[ninja-cat]: ![](\Media\ninjacat.png)
+>[ninja-cat]: !(\Media\ninjacat.png)
 
 !INSTRUCTIONS[https://blogs.msdn.microsoft.com/oldnewthing/20160804-00/?p=94025][ninja-cat]
 https://blogs.msdn.microsoft.com/oldnewthing/20160804-00/?p=94025
