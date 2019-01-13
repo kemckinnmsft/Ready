@@ -427,17 +427,15 @@ Now that you have installed the scanner bits, you need to get an Azure AD token 
   $Access = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
   $Access.ResourceAppId = $WebApp.AppId
   $Access.ResourceAccess = $Scope
-  ```
-
-
+  
    New-AzureADApplication -DisplayName AIPClient -ReplyURLs http://localhost -RequiredResourceAccess $Access -PublicClient $true
    $NativeApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPClient'"
    New-AzureADServicePrincipal -AppId $NativeApp.AppId
-   ```
+  ```
+
+3. [] Finally, we will output the Set-AIPAuthentication command by running the commands below and pressing **Enter**.
    
-1. [] Finally, we will output the Set-AIPAuthentication command by running the commands below and pressing **Enter**.
-   
-	 
+	
    ```
    "Set-AIPAuthentication -WebAppID " + $WebApp.AppId + " -WebAppKey " + $WebAppKey.Guid + " -NativeAppID " + $NativeApp.AppId | Out-File ~\Desktop\Set-AIPAuthentication.txt
 
@@ -454,7 +452,7 @@ Now that you have installed the scanner bits, you need to get an Azure AD token 
 
 	```Somepass1```
 
-1. [] Copy the **Set-AIPAuthentication** command into this window from the notepad and run it.
+1. [] Restore the **Notepad** window and copy the **full Set-AIPAuthentication** command into this window from and run it.
 1. [] When prompted, enter the username and password below:
 
 	```AIPScanner@@lab.CloudCredential(17).TenantName```
@@ -486,7 +484,7 @@ In this task, we will configure repositories to be scanned by the AIP scanner.  
 
 The next task is to configure repositories to scan.  These can be on-premises SharePoint 2010, 2013, or 2016 document libraries and any accessible CIFS based share.
 
-1. [] In the PowerShell window on Scanner01 run the commands below
+1. [] In the Administrative PowerShell window on Scanner01 run the commands below
 
     ```
     Add-AIPScannerRepository -Path http://Scanner01/documents -SetDefaultLabel Off
@@ -753,11 +751,11 @@ Now that we have Classified and Protected documents using the scanner, we can re
 	>```Pa$$w0rd```
 
 	^IMAGE[Open Screenshot](\Media\hipavcx6.jpg)
-3. [] Open one of the Contoso Purchasing Permissions documents or Run For The Cure spreadsheets.
+3. [] Open one of the Contoso Purchasing Permissions documents.
 
 
 ​	
-​	> [!NOTE] Observe that the document is classified as Confidential \ Contoso Internal. 
+​	> [!NOTE] Observe that the document is classified as Confidential \ All Employees. 
 ​	>
 ​	>!IMAGE[s1okfpwu.jpg](\Media\s1okfpwu.jpg)
 
