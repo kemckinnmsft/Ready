@@ -241,7 +241,7 @@ For several of the exercises in this lab series, you will require an active subs
 # Workplace Join Clients
 [:arrow_up: Top](#lab-environment-configuration)
 
-In this task, we will join 3 systems to the Azure AD tenant to provide SSO capabilities in Office.
+In this task, we will join a client to the Azure AD tenant to provide SSO capabilities in Office.
 
 1. [] On @lab.VirtualMachine(Client01).SelectLink, right-click on the start menu and click **Run**.
 
@@ -256,38 +256,6 @@ In this task, we will join 3 systems to the Azure AD tenant to provide SSO capab
   ```pass@word1```
 
 4. [] Click **Done**.
-
-5. [] Switch to @lab.VirtualMachine(Client02).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
-
-6. [] Right-click on the start menu and click **Run**.
-
-7. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
-
-  >!IMAGE[mssettings.png](\Media\mssettings.png)
-
-8. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
-
-  ```AliceA@@lab.CloudCredential(17).TenantName```
-
-  ```pass@word1```
-
-9. [] Click **Done**.
-
-10. [] Switch to @lab.VirtualMachine(Client03).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
-
-11. [] Right-click on the start menu and click **Run**.
-
-12. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
-
-   >!IMAGE[mssettings.png](\Media\mssettings.png)
-
-13. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
-
-   ```EvanG@@lab.CloudCredential(17).TenantName```
-
-   ```pass@word1```
-
-14. [] Click **Done**.
 
 ===
 
@@ -784,11 +752,13 @@ Now that we have Classified and Protected documents using the scanner, we can re
 5. [] When prompted by Adobe, enter ```AdamS@@lab.CloudCredential(17).TenantName``` and press OK.
 6. [] Check the box to save credentials and press OK.
 
-	> [!NOTE] The PDF will now open and display the sensitivity across the top of the document.
+  > [!NOTE] The PDF will now open and display the sensitivity across the top of the document.
 
-	> [!Knowledge] The latest version of Acrobat Reader DC and the MIP Plugin have been installed on this system prior to the lab. Additionally, the sensitivity does not display by default in Adobe Acrobat Reader DC.  You must make the modifications below to the registry to make this bar display.
-	>
-	> In **HKEY_CURRENT_USER\Software\Adobe\Acrobat Reader\DC\MicrosoftAIP**, create a new **DWORD** value of **bSHOWDMB** and set the **Value** to **1**.
+  > [!Knowledge] The latest version of Acrobat Reader DC and the MIP Plugin have been installed on this system prior to the lab. Additionally, the sensitivity does not display by default in Adobe Acrobat Reader DC.  You must make the modifications below to the registry to make this bar display.
+  >
+  > In **HKEY_CURRENT_USER\Software\Adobe\Acrobat Reader\DC\MicrosoftAIP**, create a new **DWORD** value of **bSHOWDMB** and set the **Value** to **1**.
+  >
+  > !IMAGE[1547416250228](\Media\1547416250228.png)
 
 ---
 # Reviewing the Dashboards 🐱‍👤
@@ -927,7 +897,6 @@ In this task, we will send emails to demonstrate the results of the Exchange Onl
 3. [] Scroll down to the conditions and click on **Credit Card Number**.
 4. [] In the Condition: Credit Card Number blade, click **Delete** and **OK**.
 5. [] Save and close the **Label: All Employees** blade.
-6. [] Switch to @lab.VirtualMachine(Client03).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
 7. [] Open and configure Microsoft Outlook. 
 8. [] Close and reopen Outlook to activate and if you receive a metered connection warning, click **Connect anyway**.
 9. [] Click on the **New email** button.
@@ -936,7 +905,7 @@ In this task, we will send emails to demonstrate the results of the Exchange Onl
 
 10. [] Send an email to Adam Smith, Alice Anderson, and yourself (```Adam Smith;Alice Anderson;@lab.User.Email```).  For the **Subject**, type ```Test Credit Card Email``` and for the **Body**, type ```My AMEX card number is 344047014854133. The expiration date is 09/28, and the CVV is 4368```, then click **Send**.
 
-11. [] Switch to @lab.VirtualMachine(Client01).SelectLink and review the received email.
+11. [] Review the received email. In your email, you may need to check your junk mail to find the message.
 
    !IMAGE[pidqfaa1.jpg](\Media\pidqfaa1.jpg)
 
@@ -962,6 +931,7 @@ In this task, we will send emails to demonstrate the results of the Exchange Onl
 15. [] In about a minute, you should receive an **Undeliverable** message from Exchange with the users that the message did not reach and the message you defined in the previous task.
 
    !IMAGE[kgjvy7ul.jpg](\Media\kgjvy7ul.jpg)
+> [!NOTE] This rule may take a few minutes to take effect, so if you do not get the undeliverable message, try again in a few minutes.
 
 > [!HINT] There are many other use cases for Exchange Online mail flow rules but this should give you a quick view into what is possible and how easy it is to improve the security of your sensitive data through the use of Exchange Online mail flow rules and Azure Information Protection.
 
