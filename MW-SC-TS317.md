@@ -147,7 +147,7 @@ In this task, we will create new Azure AD users and assign licenses via PowerShe
 5. [] In the PowerShell window, click the code below to assign Office and EMS licenses.
 
    ```
-   Start-Sleep -s 15
+   Start-Sleep -s 10
    foreach ($user in $users){
     
    # Store UPN created from csv and tenant
@@ -338,7 +338,7 @@ In order to collect log data from Azure Information Protection clients and servi
 	|Location|**East US** (Or a location near the event)|
 
 	^IMAGE[Open Screenshot](\Media\5butui15.jpg)
-1. [] Next, back in the Configure analytics (preview) blade, **check the boxes** next to the **workspace** and to **Enable Content Matches** and click **OK**.
+1. [] Next, back in the Configure analytics (preview) blade, **check the boxes** next to the **workspace** and next to **Enable Content Matches** and click **OK**.
 
 	!IMAGE[1547437013585](\Media\1547437013585.png)
 1. [] Click **Yes**, in the confirmation dialog.
@@ -391,35 +391,35 @@ Now that you have installed the scanner bits, you need to get an Azure AD token 
 	```@lab.CloudCredential(17).Password```
 1. [] Next, click the **T** to **type the commands below** in the PowerShell window and press **Enter**. 
 
-  > [!NOTE] This will create a new Web App Registration, Native App Registration, and associated Service Principals in Azure AD.
+    > [!NOTE] This will create a new Web App Registration, Native App Registration, and associated Service Principals in Azure AD.
 
-  ```
-  New-AzureADApplication -DisplayName AIPOnBehalfOf -ReplyUrls http://localhost
-  $WebApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPOnBehalfOf'"
-  New-AzureADServicePrincipal -AppId $WebApp.AppId
-  $WebAppKey = New-Guid
-  $Date = Get-Date
-  New-AzureADApplicationPasswordCredential -ObjectId $WebApp.ObjectID -startDate $Date -endDate $Date.AddYears(1) -Value $WebAppKey.Guid -CustomKeyIdentifier "AIPClient"
-  
-  $AIPServicePrincipal = Get-AzureADServicePrincipal -All $true | ? {$_.DisplayName -eq 'AIPOnBehalfOf'}
-  $AIPPermissions = $AIPServicePrincipal | select -expand Oauth2Permissions
-  $Scope = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $AIPPermissions.Id,"Scope"
-  $Access = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
-  $Access.ResourceAppId = $WebApp.AppId
-  $Access.ResourceAccess = $Scope
-  
-   New-AzureADApplication -DisplayName AIPClient -ReplyURLs http://localhost -RequiredResourceAccess $Access -PublicClient $true
-   $NativeApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPClient'"
-   New-AzureADServicePrincipal -AppId $NativeApp.AppId
-  ```
+    ```
+    New-AzureADApplication -DisplayName AIPOnBehalfOf -ReplyUrls http://localhost
+    $WebApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPOnBehalfOf'"
+    New-AzureADServicePrincipal -AppId $WebApp.AppId
+    $WebAppKey = New-Guid
+    $Date = Get-Date
+    New-AzureADApplicationPasswordCredential -ObjectId $WebApp.ObjectID -startDate $Date -endDate $Date.AddYears(1) -Value $WebAppKey.Guid -CustomKeyIdentifier "AIPClient"
+
+    $AIPServicePrincipal = Get-AzureADServicePrincipal -All $true | ? {$_.DisplayName -eq 'AIPOnBehalfOf'}
+    $AIPPermissions = $AIPServicePrincipal | select -expand Oauth2Permissions
+    $Scope = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $AIPPermissions.Id,"Scope"
+    $Access = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
+    $Access.ResourceAppId = $WebApp.AppId
+    $Access.ResourceAccess = $Scope
+
+     New-AzureADApplication -DisplayName AIPClient -ReplyURLs http://localhost -RequiredResourceAccess $Access -PublicClient $true
+     $NativeApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPClient'"
+     New-AzureADServicePrincipal -AppId $NativeApp.AppId
+    ```
 
 3. [] Finally, we will output the Set-AIPAuthentication command by running the commands below and pressing **Enter**.
 
 
-   ```
-   "Set-AIPAuthentication -WebAppID " + $WebApp.AppId + " -WebAppKey " + $WebAppKey.Guid + " -NativeAppID " + $NativeApp.AppId | Out-File ~\Desktop\Set-AIPAuthentication.txt
-   Start ~\Desktop\Set-AIPAuthentication.txt
-   ```
+    ```
+    "Set-AIPAuthentication -WebAppID " + $WebApp.AppId + " -WebAppKey " + $WebAppKey.Guid + " -NativeAppID " + $NativeApp.AppId | Out-File ~\Desktop\Set-AIPAuthentication.txt
+    Start ~\Desktop\Set-AIPAuthentication.txt
+    ```
 1. [] Leave the notepad window open in the background.
 1. [] Click on the Start menu and type ```PowerShell```, right-click on the PowerShell program, and click **Run as a different user**.
 
@@ -529,10 +529,10 @@ The next task is to configure repositories to scan.  These can be on-premises Sh
 
 	>[!ALERT] If you see any failures, it is likely due to SharePoint startup in the VM environment.  If you rerun Start-AIPScan on Scanner01 all files will successfully scan.  This should not happen in a production environment.
 	
----
 
+===
 # Defining Recommended and Automatic Conditions 
-[:arrow_up: Top](#configuring-aip-scanner-for-discovery)
+[:arrow_left: Home](#introduction)
 
 One of the most powerful features of Azure Information Protection is the ability to guide your users in making sound decisions around safeguarding sensitive data.  This can be achieved in many ways through user education or reactive events such as blocking emails containing sensitive data. 
 
@@ -585,10 +585,12 @@ However, helping your users to properly classify and protect sensitive data at t
 
    !IMAGE[245lpjvk.jpg](\Media\245lpjvk.jpg)
 
-   > [!HINT] The policy tip is automatically updated when you switch the condition to Automatic.
+	> [!HINT] The policy tip is automatically updated when you switch the condition to Automatic.
+
 1. [] Click **Save** in the Label: All Employees blade and **OK** to the Save settings prompt.
 
 	^IMAGE[Open Screenshot](\Media\gek63ks8.jpg)
+
 1. [] Press the **X** in the upper right-hand corner to close the Label: All Employees blade.
 
 	^IMAGE[Open Screenshot](\Media\wzwfc1l4.jpg)
