@@ -333,14 +333,14 @@ In order to collect log data from Azure Information Protection clients and servi
 
 	|||
 	|-----|-----|
-	|OMS Workspace|**Unique Workspace Name**|
+	|OMS Workspace|**Type a unique Workspace Name**|
 	|Resource Group|```AIP-RG```|
-	|Location|**East US**|
+	|Location|**East US** (Or a location near the event)|
 
 	^IMAGE[Open Screenshot](\Media\5butui15.jpg)
 1. [] Next, back in the Configure analytics (preview) blade, **check the boxes** next to the **workspace** and to **Enable Content Matches** and click **OK**.
 
-	!IMAGE[gste52sy.jpg](\Media\gste52sy.jpg)
+	!IMAGE[1547437013585](\Media\1547437013585.png)
 1. [] Click **Yes**, in the confirmation dialog.
 
 	!IMAGE[zgvmm4el.jpg](\Media\zgvmm4el.jpg)
