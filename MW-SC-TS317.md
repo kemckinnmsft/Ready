@@ -80,12 +80,8 @@ There are also Knowledge Items, Notes, and Hints throughout the lab.
 There are a few prerequisites that need to be set up to complete all the sections in this lab.  This Exercise will walk you through the items below.
 
 - [Azure AD User Configuration](#azure-ad-user-configuration)
-  
-- [Exchange Mail Flow Rule Removal](#exchange-mail-flow-rule-removal)
 
 - [Redeem Azure Pass](#redeem-azure-pass)
-
-- [Workplace Join Clients](#workplace-join-clients)
 
 ---
 ## Azure AD User Configuration
@@ -165,30 +161,6 @@ In this task, we will create new Azure AD users and assign licenses via PowerShe
    ```
 6. [] Leave the PowerShell window open for the next task.
 
----
-## Exchange Mail Flow Rule Removal
-[:arrow_up: Top](#lab-environment-configuration)
-
-By default, many of the demo tenants provided block external communications via mail flow rule.  As this will hinder many tests in this lab, we will verify if such a rule exists and remove it if necesary.
-
-1. [] In the Admin PowerShell window, type the commands below to connect to an Exchange Online PowerShell session.  
-
-    ```
-    $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $cred -Authentication Basic -AllowRedirection
-    Import-PSSession $Session
-    ```
-
-3. [] Get the active Mail Flow Rules by typing the command below:
-
-    ```
-    Get-TransportRule
-    ```
-
-4. [] If a rule exists named something similar to **"Delete if sent outside the organization"**, run the code below to remove this rule.
-
-    ```
-    Remove-TransportRule *Delete*
-    ```
 
 ---
 ## Redeem Azure Pass
@@ -236,25 +208,6 @@ For several of the exercises in this lab series, you will require an active subs
 
 1. [] While this is processing, you may continue to the next task.
 
----
-## Workplace Join Clients
-[:arrow_up: Top](#lab-environment-configuration)
-
-In this task, we will join a client to the Azure AD tenant to provide SSO capabilities in Office.
-
-1. [] On @lab.VirtualMachine(Client01).SelectLink, right-click on the start menu and click **Run**.
-
-2. [] In the Run dialog, type ```ms-settings:workplace``` and click **OK**.
-
-	>!IMAGE[mssettings.png](\Media\mssettings.png)
-
-3. [] In the Access Work or School settings menu, click on **+ Connect** and enter the credentials below to workplace join the client.
-
-    ```AdamS@@lab.CloudCredential(17).TenantName```
-
-    ```pass@word1```
-    
-4. [] Click **Done**.
 
 ===
 
@@ -281,7 +234,6 @@ Finally, we will demonstrate how to use the new AIP Dashboards to leverage Azure
 ## Objectives
 
 This lab assumes that you are familiar with label and policy creation and that you have seen the operation of conditions in Office applications as these will not be demonstrated.  This lab will use the predefined labels and global policy populated in the demo tenants.
-
 
 
 ===
