@@ -584,30 +584,8 @@ The previous step enabled the AIP labels for use in the Security and Compliance 
 
 	!IMAGE[Open Screenshot](\Media\SCC10.png)
 
-===
-# Bulk Classification with the AIP Client 
-[:arrow_left: Home](#azure-information-protection)
+---
 
-In this task, we will perform bulk classification using the built-in functionality of the AIP Client.  This can be useful for users that want to classify/protect many documents that exist in a central location or locations identified by scanner discovery.  Because this is done manually, it is an AIP P1 feature.
-
-1. [] On @lab.VirtualMachine(Scanner01).SelectLink, log in with the password +++@lab.VirtualMachine(Scanner01).Password+++.
-2. [] Browse to the **C:\\**.
-3. [] Right-click on the PII folder and select **Classify and Protect**.
-   
-   !IMAGE[CandP.png](\Media\CandP.png)
-4. [] When prompted, click use another account and use the credentials below to authenticate:
-
-	```AIPScanner@@lab.CloudCredential(17).TenantName```
-
-	```Somepass1```
-
-1. [] In the AIP client Classify and protect interface, select **Highly Confidential\\All Employees** and press **Apply**. 
-
-	!IMAGE[CandP2.png](\Media\CandP2.png)
-
-> [!Alert] If you are unable to see the **Apply** button due to screen resolution, click **Alt+A** and **Enter** to apply the label to the content.
-
-> [!NOTE] You may review the results in a text file by clicking show results, or simply close the window.
 ===
 # Classification, Labeling, and Protection with the Azure Information Protection Scanner 
 [:arrow_left: Home](#azure-information-protection)
@@ -619,6 +597,76 @@ In this exercise, we will run the AIP Scanner in enforce mode to classify and pr
 - [Enforcing Configured Rules](#enforcing-configured-rules)
 - [Reviewing Protected Documents](#reviewing-protected-documents)
 - [Reviewing the Dashboards](#reviewing-the-dashboards)
+
+---
+## Defining Automatic Conditions
+[:arrow_up: Top](#aip-scanner-classification-labeling-and-protection)
+
+The Azure Information Protection Scanner uses Automatic conditions to identify sensitive content to classify, label, and protect.  In this exercise, we will configure some of these conditions.
+
+1. [] On @lab.VirtualMachine(Client01).SelectLink, log in with the password +++@lab.VirtualMachine(Client01).Password+++.
+2. [] Open the browser window with the Azure Portal (AIP Blade).
+
+	> [!HINT] If necessary, open an InPrivate browsing session and navigate to ```https://portal.azure.com/#blade/Microsoft_Azure_InformationProtection/DataClassGroupEditBlade/globalBlade``` and login with the credentials below. 
+	>
+	> ```@lab.CloudCredential(134).Username```
+	>
+	> ```@lab.CloudCredential(134).Password```
+
+3. [] Under **Dashboards** on the left, click on **Data discovery (Preview)** to view the results of the discovery scan we performed previously.
+
+	!IMAGE[Dashboard.png](\Media\Dashboard.png)
+
+	> [!KNOWLEDGE] Notice that there are no labeled or protected files shown at this time.  This uses the AIP P1 discovery functionality available with the AIP Scanner. Only the predefined Office 365 Sensitive Information Types are available with AIP P1 as Custom Sensitive Information Types require automatic conditions to be defined, which is an AIP P2 feature.
+
+	> [!NOTE] Now that we know the sensitive information types that are most common in this environment, we can use that information to create **Recommended** conditions that will help guide user behavior when they encounter this type of data.
+
+	> [!ALERT] If no data is shown, it may still be processing. Continue with the lab and come back to see the results later.
+
+1. [] Under **Classifications** on the left, click **Labels** then expand **Confidential**, and click on **All Employees**.
+
+	^IMAGE[Open Screenshot](\Media\jyw5vrit.jpg)
+1. [] In the Label: All Employees blade, scroll down to the **Configure conditions for automatically applying this label** section, and click on **+ Add a new condition**.
+
+	!IMAGE[cws1ptfd.jpg](\Media\cws1ptfd.jpg)
+1. [] In the Condition blade, in the **Select information types** search box, type ```EU``` and check the boxes next to the **items shown below**.
+
+	!IMAGE[xaj5hupc.jpg](\Media\xaj5hupc.jpg)
+
+1. [] Click **Save** in the Condition blade and **OK** to the Save settings prompt.
+
+	^IMAGE[Open Screenshot](\Media\41o5ql2y.jpg)
+1. [] In the Labels: All Employees blade, in the **Configure conditions for automatically applying this label** section, click **Automatic**.
+
+1. [] Click **Save** in the Label: All Employees blade and **OK** to the Save settings prompt.
+
+	^IMAGE[Open Screenshot](\Media\rimezmh1.jpg)
+1. [] Press the **X** in the upper right-hand corner to close the Label: All Employees blade.
+
+	^IMAGE[Open Screenshot](\Media\em124f66.jpg)
+1. [] Next, expand **Highly Confidential** and click on the **All Employees** sub-label.
+
+	^IMAGE[Open Screenshot](\Media\2eh6ifj5.jpg)
+1. [] In the Label: All Employees blade, scroll down to the **Configure conditions for automatically applying this label** section, and click on **+ Add a new condition**.
+
+	^IMAGE[Open Screenshot](\Media\8cdmltcj.jpg)
+1. [] In the Condition blade, in the search bar type ```credit``` and check the box next to **Credit Card Number**.
+
+	^IMAGE[Open Screenshot](\Media\9rozp61b.jpg)
+1. [] Click **Save** in the Condition blade and **OK** to the Save settings prompt.
+
+	^IMAGE[Open Screenshot](\Media\ie6g5kta.jpg)
+15. [] In the Labels: All Employees blade, in the **Configure conditions for automatically applying this label** section, click **Automatic**.
+
+   !IMAGE[245lpjvk.jpg](\Media\245lpjvk.jpg)
+
+1. [] Click **Save** in the Label: All Employees blade and **OK** to the Save settings prompt.
+
+	^IMAGE[Open Screenshot](\Media\gek63ks8.jpg)
+
+1. [] Press the **X** in the upper right-hand corner to close the Label: All Employees blade.
+
+	^IMAGE[Open Screenshot](\Media\wzwfc1l4.jpg)
 
 ---
 
@@ -731,149 +779,21 @@ We can now go back and look at the dashboards and observe how they have changed.
 	
 
 ===
-# Exchange Online IRM Capabilities 
-[:arrow_left: Home](#azure-information-protection)
-
-Exchange Online can work in conjunction with Azure Information Protection to provide advanced capabilities for protecting sensitive data being sent over email.  You can also manage the flow of classified content to ensure that it is not sent to unintended recipients. This Exercise will walk you through the items below.
-
-- [Configuring Exchange Online Mail Flow Rules](#configuring-exchange-online-mail-flow-rules) 
-- [Demonstrating Exchange Online Mail Flow Rules](#demonstrating-exchange-online-mail-flow-rules)  
-
-## Configuring Exchange Online Mail Flow Rules 
-
-In this task, we will configure a mail flow rule to detect sensitive information traversing the network in the clear and encrypt it using the Encrypt Only RMS Template.  We will also create a mail flow rule to prevent messages classified as Confidential \ All Employees from being sent to external recipients.
-
-1. [] Switch to @lab.VirtualMachine(Client01).SelectLink and open an **Admin PowerShell Prompt**.
-
-2. [] Type the commands below to connect to an Exchange Online PowerShell session.  Use the credentials provided when prompted.
-
-	```
-	$UserCredential = Get-Credential
-	```
-
-	```@lab.CloudCredential(17).Username```
-
-	```@lab.CloudCredential(17).Password```
-
-	```
-	$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $UserCredential -Authentication Basic -AllowRedirection
-	Import-PSSession $Session
-	```
-
-1. [] Create a new Exchange Online Mail Flow Rule using the code below:
-
-	```
-	New-TransportRule -Name "Encrypt external mails with sensitive content" -SentToScope NotInOrganization -ApplyRightsProtectionTemplate "Encrypt" -MessageContainsDataClassifications @(@{Name="ABA Routing Number"; minCount="1"},@{Name="Credit Card Number"; minCount="1"},@{Name="Drug Enforcement Agency (DEA) Number"; minCount="1"},@{Name="International Classification of Diseases (ICD-10-CM)"; minCount="1"},@{Name="International Classification of Diseases (ICD-9-CM)"; minCount="1"},@{Name="U.S. / U.K. Passport Number"; minCount="1"},@{Name="U.S. Bank Account Number"; minCount="1"},@{Name="U.S. Individual Taxpayer Identification Number (ITIN)"; minCount="1"},@{Name="U.S. Social Security Number (SSN)"; minCount="1"})
-	```
-
-	>[!KNOWLEDGE] This mail flow rule can be used to encrypt sensitive data leaving via email.  This can be customized to add additional sensitive data types. A breakdown of the command is listed below.
-	>
-	>New-TransportRule 
-	>
-	>-Name "Encrypt external mails with sensitive content" 
-	>
-	>-SentToScope NotInOrganization 
-	>
-	>-ApplyRightsProtectionTemplate "Encrypt" 
-	>
-	>-MessageContainsDataClassifications @(@{Name="ABA Routing Number"; minCount="1"},@{Name="Credit Card Number"; minCount="1"},@{Name="Drug Enforcement Agency (DEA) Number"; minCount="1"},@{Name="International Classification of Diseases (ICD-10-CM)"; minCount="1"},@{Name="International Classification of Diseases (ICD-9-CM)"; minCount="1"},@{Name="U.S. / U.K. Passport Number"; minCount="1"},@{Name="U.S. Bank Account Number"; minCount="1"},@{Name="U.S. Individual Taxpayer Identification Number (ITIN)"; minCount="1"},@{Name="U.S. Social Security Number (SSN)"; minCount="1"})
-	
-	> [!HINT] Next, we need to capture the **Label ID** for the **Confidential \ All Employees** label. 
-
-1. [] Switch to the Azure Portal and under **Classifications** click on Labels, then expand **Confidential** and click on **All Employees**.
-
-	!IMAGE[w2w5c7xc.jpg](\Media\Allemp.png)
-
-	> [!HINT] If you closed the azure portal, open an Edge InPrivate window and navigate to ```https://portal.azure.com```.
-
-1. [] In the Label: All Employees blade, scroll down to the Label ID and **copy** the value.
-
-	!IMAGE[lypurcn5.jpg](\Media\lypurcn5.jpg)
-
-	> [!ALERT] Make sure that there are no spaces before or after the Label ID as this will cause the mail flow rule to be ineffective.
-
-1. [] Next, return to the PowerShell window and type +++$labelid = "+++ then paste the **LabelID** for the **All Employees** label, type +++"+++, and press **Enter**.
-
-    >[!NOTE] The full command should look like **$labelid = "Label ID GUID"**
-1. [] Now, create another Exchange Online Mail Flow Rule using the code below:
-
-	```
-	$labeltext = "MSIP_Label_"+$labelid+"_enabled=true"
-	New-TransportRule -name "Block Confidential All Employees" -SentToScope notinorganization -HeaderContainsMessageHeader  "msip_labels" -HeaderContainsWord $labeltext -RejectMessageReasonText “All Employees messages cannot be sent to external recipients.”
-	```
-
-	>[!KNOWLEDGE] This mail flow rule can be used to prevent internal only communications from being sent to an external audience.
-	>
-	>New-TransportRule 
-	>
-	>-name "Block Confidential All Employees" 
-	>
-	>-SentToScope notinorganization 
-	>
-	>-HeaderContainsMessageHeader "msip_labels" 
-	>
-	>-HeaderContainsWord $labeltext 
-	>
-	>-RejectMessageReasonText “All Employees messages cannot be sent to external recipients.”
-
-	>[!NOTE] In a production environment, customers would want to create a rule like this for each of their labels that they did not want going externally.
-
----
-
-## Demonstrating Exchange Online Mail Flow Rules 
-[:arrow_up: Top](#exchange-online-irm-capabilities)
-
-In this task, we will send emails to demonstrate the results of the Exchange Online mail flow rules we configured in the previous task.  This will demonstrate some ways to protect your sensitive data and ensure a positive user experience with the product.
-
-1. [] On @lab.VirtualMachine(Client01).SelectLink, in the Azure Portal, under **Classifications**, click on **Labels**.
-2. [] Expand **Highly Confidential** and click on **All Employees**.
-3. [] Scroll down to the conditions and click on **Credit Card Number**.
-4. [] In the Condition: Credit Card Number blade, click **Delete** and **OK**.
-5. [] Save and close the **Label: All Employees** blade.
-7. [] Open and configure Microsoft Outlook. 
-8. [] Close and reopen Outlook to activate and if you receive a metered connection warning, click **Connect anyway**.
-9. [] Click on the **New email** button.
-
-  ^IMAGE[Open Screenshot](\Media\6wan9me1.jpg)
-
-10. [] Send an email to Adam Smith, Alice Anderson, and yourself (```Adam Smith;Alice Anderson;@lab.User.Email```).  For the **Subject**, type ```Test Credit Card Email``` and for the **Body**, type ```My AMEX card number is 344047014854133. The expiration date is 09/28, and the CVV is 4368```, then click **Send**.
-
-11. [] Review the received email. In your email, you may need to check your junk mail to find the message.
-
-   !IMAGE[pidqfaa1.jpg](\Media\pidqfaa1.jpg)
-
-   > [!Knowledge] Note that there is no encryption applied to the message.  That is because we set up the rule to only apply to external recipients.  If you were to leave that condition out of the mail flow rule, internal recipients would also receive an encrypted copy of the message.  The image below shows the encrypted message that was received externally.
-   >
-   >!IMAGE[c5foyeji.jpg](\Media\c5foyeji.jpg)
-   >
-   >Below is another view of the same message received in Outlook Mobile on an iOS device.
-   >
-   >!IMAGE[599ljwfy.jpg](\Media\599ljwfy.jpg)
-
-12. [] Click on the **New email** button.
-
-   ^IMAGE[Open Screenshot](\Media\6wan9me1.jpg)
-13. [] Send an email to Adam Smith, Alice Anderson, and yourself (```Adam Smith;Alice Anderson;@lab.User.Email```).  For the **Subject** and **Body** type ```Another Test All Employees Email```.
-
-   ^IMAGE[Open Screenshot](\Media\d476fmpg.jpg)
-
-14. [] In the Sensitivity Toolbar, click on **Confidential** and then **All Employees** and click **Send**.
-
-   ^IMAGE[Open Screenshot](\Media\yhokhtkv.jpg)
-
-15. [] In about a minute, you should receive an **Undeliverable** message from Exchange with the users that the message did not reach and the message you defined in the previous task.
-
-   !IMAGE[kgjvy7ul.jpg](\Media\kgjvy7ul.jpg)
-> [!NOTE] This rule may take a few minutes to take effect, so if you do not get the undeliverable message, try again in a few minutes.
-
-> [!HINT] There are many other use cases for Exchange Online mail flow rules but this should give you a quick view into what is possible and how easy it is to improve the security of your sensitive data through the use of Exchange Online mail flow rules and Azure Information Protection.
-
-===
 # AIP Lab Complete 
 [:arrow_left: Home](#azure-information-protection)
 
 Congratulations! You have completed the Azure Information Protection Hands on Lab. 
->[ninja-cat]: !(\Media\ninjacat.png)
+
+In this lab you have successfully completed the exercises below.
+
+- Sensitive data Discovery using the AIP scanner and the new cloud UI
+- Enabling Sensitivity Labels in the Microsoft 365 Security and Compliance Center
+- Publishing a Label Policy in the Microsoft 365 Security and Compliance Center
+- Automatic Classification and Protection of sensitive data using the AIP scanner
+- Review of protected Office and Adobe PDF documents
+- Review of the new Azure Log Analytics Dashboards
+
+> [ninja-cat]: !IMAGE[cat](\Media\ninjacat.png)
 
 !INSTRUCTIONS[https://blogs.msdn.microsoft.com/oldnewthing/20160804-00/?p=94025][ninja-cat]
 https://blogs.msdn.microsoft.com/oldnewthing/20160804-00/?p=94025
