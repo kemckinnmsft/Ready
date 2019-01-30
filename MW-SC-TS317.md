@@ -33,45 +33,7 @@ This lab is designed to be completed on Windows 10 VM with the following charact
 
 Microsoft 365 E5 Tenant credentials will be provided during the event.  If you want to run through this lab after the event, you may use a tenant created through https://demos.microsoft.com or your own Microsoft 365 Tenant. This Lab Guide will be publicly available after the event at https://aka.ms/AIPHOL2.
 
-===
-# Tips and Tricks
-[🔙](#introduction)
-
-There are a few extras throughout this lab that are designed to make your lab experience a smooth and simple process.  Below are some icons you should watch out for that will save you time during each task.
-
-## Interactive Elements
-
-- Each task contains a series of steps required for successful completion of the lab.  To track your progress throughout the lab, check the box to the left of the numbered series.  
-
-	!IMAGE[6mfi1ekm.jpg](\Media\6mfi1ekm.jpg)
-- After you check each box, you will see your lab progress at the bottom of the instruction pane.
-
-	!IMAGE[0ggu265u.jpg](\Media\0ggu265u.jpg)
-- When you see an instruction for switching computers, click on the **blue link** in the text to have that VM loaded automatically.
-
-	!IMAGE[12i85vgl.jpg](\Media\12i85vgl.jpg)
-- Throughout the lab, you will see text with a letter **T** in a square to the left.  This indicates that you can **click on the text** and it will **type it for you** in the VM.  **This will save you lots of time**.
-
-	!IMAGE[cnyu1tdi.jpg](\Media\cnyu1tdi.jpg)
-- Additionally you will a @lab.CtrlAltDelete button that will press **Ctrl-Alt-Delete** in the active VM.
-
-- The last interactive element you will see throughout the lab is the **Open Screenshot** text below many steps.  To reduce clutter, most screenshots have been configured to launch in a popup window.  The only ones left visible are ones that could cause issues if they are missed or if there are multiple elements that are easier to understand with visual representation.
-
-	!IMAGE[n4cqn070.jpg](\Media\n4cqn070.jpg)
-
-## Additional Information
-
-There are also Knowledge Items, Notes, and Hints throughout the lab.
-
-- Knowledge Items are used to provide additional information about a topic related to the task or step.  These are often collapsed to reduce the amount of space they use, but it is recommended that you review these items if you want more information on the subject.
-
-	!IMAGE[8g9nif1j.jpg](\Media\8g9nif1j.jpg)
-- Notes are steps that do not require action or modification of any elements.  This includes general observations and reviewing the results of previous steps.
-
-	!IMAGE[kxrbzsr2.jpg](\Media\kxrbzsr2.jpg)
-- Hints are recommendations or observations that help with the completion of a step.
-
-	!IMAGE[w11x99oo.jpg](\Media\w11x99oo.jpg)
+---
 
 ===
 # Lab Environment Configuration
@@ -83,86 +45,93 @@ There are a few prerequisites that need to be set up to complete all the section
 
 - [Redeem Azure Pass](#redeem-azure-pass)
 
+- [Configuring Azure Log Analytics](#configuring-azure-log-analytics)
+
 ---
-## Azure AD User Configuration
+# Azure AD User Configuration
+[:arrow_left: Home](#lab-environment-configuration)
 
 In this task, we will create new Azure AD users and assign licenses via PowerShell.  In a procduction evironment this would be done using Azure AD Connect or a similar tool to maintain a single source of authority, but for lab purposes we are doing it via script to reduce setup time.
 
 1. [] Log into @lab.VirtualMachine(Scanner01).SelectLink using the password +++@lab.VirtualMachine(Client01).Password+++
-2. [] Open a new Administrative PowerShell window and click below to type the code. 
-   
-    ```
-    $cred = Get-Credential
-    ```
+2. [] On the desktop, **right-click** on **AADConfig.ps1** and click **Run with PowerShell**.
 
-3. [] When prompted, provide the credentials below:
+	!IMAGE[AADConfig](\Media\AADConfig.png)
+
+	> [!NOTE] If prompted to change the execution policy, type **y** and **Enter**.
+
+1. [] When prompted for the **Tenant name**, **click in the text box** and enter ```@lab.CloudCredential(17).TenantName```.
+1. [] When prompted, provide the credentials below:
 
 	```@lab.CloudCredential(17).Username```
 
 	```@lab.CloudCredential(17).Password``` 
    
-4. [] In the PowerShell window, click on the code below to create users.
+	> [!KNOWLEDGE] We are running the PowerShell code below to create the accounts and groups in AAD and assign licenses for EMS E5 and Office E5. This script is also available at [https://aka.ms/labscripts](https://aka.ms/labscripts) as AADConfig.ps1.
+    > 
+    > #### Azure AD User and Group Configuration
+    > $tenantfqdn = "@lab.CloudCredential(134).TenantName"
+    > $tenant = $tenantfqdn.Split('.')[0]
+	> 
+    > #### Build Licensing SKUs
+    > $office = $tenant+":ENTERPRISEPREMIUM"
+    > $ems = $tenant+":EMSPREMIUM"
+	> 
+    > #### Connect to MSOLService for licensing Operations
+    > Connect-MSOLService -Credential $cred
+	> 
+    > #### Remove existing licenses to ensure enough licenses exist for our users
+    > $LicensedUsers = Get-MsolUser -All  | where {$_.isLicensed -eq $true}
+    > $LicensedUsers | foreach {Set-MsolUserLicense -UserPrincipalName $_.UserPrincipalName -RemoveLicenses $office, $ems}
+	> 
+    > #### Connect to Azure AD using stored credentials to create users
+    > Connect-AzureAD -Credential $cred
+	> 
+    > #### Import Users from local csv file
+    > $users = Import-csv C:\users.csv
+	> 
+    > foreach ($user in $users){
+    > 	
+    > #### Store UPN created from csv and tenant
+    > $upn = $user.username+"@"+$tenantfqdn
+	> 
+    > #### Create password profile preventing automatic password change and storing password from csv
+    > $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile 
+    > $PasswordProfile.ForceChangePasswordNextLogin = $false 
+    > $PasswordProfile.Password = $user.password
+	> 
+    > #### Create new Azure AD user
+    > New-AzureADUser -AccountEnabled $True -DisplayName $user.displayname -PasswordProfile $PasswordProfile -MailNickName $user.username -UserPrincipalName $upn
+    > }
+    > 
+    > #### MCAS user and group creation
+	> $upn = "mcasAdminUS@"+$tenantfqdn
+	> New-AzureADUser -AccountEnabled $True -DisplayName "MCAS US admin" -PasswordProfile $PasswordProfile -MailNickName "mcasadminUS" -UserPrincipalName $upn
+    > New-AzureADGroup -DisplayName "US employees" -MailNickName "USemployees" -SecurityEnabled $true -MailEnabled $false
+    > $groupId = Get-AzureADGroup -SearchString "usemployees"
+    > $userId = Get-AzureADUser -SearchString "mcasadminus"
+    > Add-AzureADGroupMember -RefObjectId $userId.ObjectId -ObjectId $groupId.ObjectId
+	> 
+	> Start-Sleep -s 10
+	> foreach ($user in $users){
+	> 
+    > #### Store UPN created from csv and tenant
+    > $upn = $user.username+"@"+$tenantfqdn
+	> 
+    > #### Assign Office and EMS licenses to users
+    > Set-MsolUser -UserPrincipalName $upn -UsageLocation US
+    > Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
+    > }
+	> 
+    > #### Assign Office and EMS licenses to Admin user
+    > $upn = "admin@"+$tenantfqdn
+    > Set-MsolUser -UserPrincipalName $upn -UsageLocation US
+    > Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
 
-    ```
-    # Store Tenant FQDN and Short name
-    $tenantfqdn = "@lab.CloudCredential(17).TenantName"
-    $tenant = $tenantfqdn.Split('.')[0]
-    
-    # Build Licensing SKUs
-    $office = $tenant+":ENTERPRISEPREMIUM"
-    $ems = $tenant+":EMSPREMIUM"
-    
-    # Connect to MSOLService for licensing Operations
-    Connect-MSOLService -Credential $cred
-    
-    # Remove existing licenses to ensure enough licenses exist for our users
-    $LicensedUsers = Get-MsolUser -All  | where {$_.isLicensed -eq $true}
-    $LicensedUsers | foreach {Set-MsolUserLicense -UserPrincipalName $_.UserPrincipalName -RemoveLicenses $office, $ems}
-    
-    # Connect to Azure AD using stored credentials to create users
-    Connect-AzureAD -Credential $cred
-    
-    # Import Users from local csv file
-    $users = Import-csv C:\users.csv
-    
-    foreach ($user in $users){
-    	
-    # Store UPN created from csv and tenant
-    $upn = $user.username+"@"+$tenantfqdn
-    
-    # Create password profile preventing automatic password change and storing password from csv
-    $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile 
-    $PasswordProfile.ForceChangePasswordNextLogin = $false 
-    $PasswordProfile.Password = $user.password
-    
-    # Create new Azure AD user
-    New-AzureADUser -AccountEnabled $True -DisplayName $user.displayname -PasswordProfile $PasswordProfile -MailNickName $user.username -UserPrincipalName $upn
-    }
-    ```
-
-5. [] In the PowerShell window, click the code below to assign Office and EMS licenses.
-
-   ```
-   Start-Sleep -s 10
-   foreach ($user in $users){
-    
-   # Store UPN created from csv and tenant
-   $upn = $user.username+"@"+$tenantfqdn
-   
-   # Assign Office and EMS licenses to users
-   Set-MsolUser -UserPrincipalName $upn -UsageLocation US
-   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
-   }
-   
-   # Assign Office and EMS licenses to Admin user
-   $upn = "admin@"+$tenantfqdn
-   Set-MsolUser -UserPrincipalName $upn -UsageLocation US
-   Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $office, $ems
-   ```
-6. [] Leave the PowerShell window open for the next task.
-
+	> [!NOTE] The PowerShell window will automatically close once users have been created and licenses have been assigned.
 
 ---
+
 ## Redeem Azure Pass
 [:arrow_up: Top](#lab-environment-configuration)
 
@@ -178,13 +147,12 @@ For several of the exercises in this lab series, you will require an active subs
 4. [] Click the **Start** button to get started.
 
 	!IMAGE[wdir7lb3.jpg](\Media\wdir7lb3.jpg)
-1. [] Enter the credentials below and select **Sign In**.
+1. [] Log in using the credentials below.
 
 	```@lab.CloudCredential(17).Username```
 
 	```@lab.CloudCredential(17).Password``` 
 
-	!IMAGE[gtg8pvp1.jpg](\Media\gtg8pvp1.jpg)
 1. [] Click **Confirm** if the correct email address is listed.
 
 	!IMAGE[teyx280d.jpg](\Media\teyx280d.jpg)
@@ -235,23 +203,6 @@ Finally, we will demonstrate how to use the new AIP Dashboards to leverage Azure
 
 This lab assumes that you are familiar with label and policy creation and that you have seen the operation of conditions in Office applications as these will not be demonstrated.  This lab will use the predefined labels and global policy populated in the demo tenants.
 
-
-===
-# Configuring AIP Scanner for Discovery 
-
-Even before configuring an AIP classification taxonomy, customers can scan and identify files containing sensitive information based on the built-in sensitive information types included in the Microsoft Classification Engine.  
-
-!IMAGE[ahwj80dw.jpg](\Media\ahwj80dw.jpg)
-
-Often, this can help drive an appropriate level of urgency and attention to the risk customers face if they delay rolling out AIP classification and protection.  
-
-In this exercise, we will install the AIP scanner and run it against repositories in discovery mode.  Later in this lab (after configuring labels and conditions) we will revisit the scanner to perform automated classification, labeling, and protection of sensitive documents. This Exercise will walk you through the items below.
-
-- [Configuring Azure Log Analytics](#configuring-azure-log-analytics)
-- [AIP Scanner Setup](#aip-scanner-setup)
-- [Running Sensitive Data Discovery](#running-sensitive-data-discovery)
-- [Defining Recommended and Automatic Conditions](#defining-recommended-and-automatic-conditions)
-
 ---
 ## Configuring Azure Log Analytics 
 
@@ -298,8 +249,23 @@ In order to collect log data from Azure Information Protection clients and servi
 	!IMAGE[zgvmm4el.jpg](\Media\zgvmm4el.jpg)
 
 ---
-## AIP Scanner Setup 
-[:arrow_up: Top](#configuring-aip-scanner-for-discovery)
+
+===
+# Configuring AIP Scanner for Discovery 
+
+Even before configuring an AIP classification taxonomy, customers can scan and identify files containing sensitive information based on the built-in sensitive information types included in the Microsoft Classification Engine.  
+
+!IMAGE[ahwj80dw.jpg](\Media\ahwj80dw.jpg)
+
+Often, this can help drive an appropriate level of urgency and attention to the risk customers face if they delay rolling out AIP classification and protection.  
+
+In this exercise, we will install the AIP scanner and run it against repositories in discovery mode.  Later in this lab (after configuring labels and conditions) we will revisit the scanner to perform automated classification, labeling, and protection of sensitive documents. This Exercise will walk you through the items below.
+
+- [AIP Scanner Setup](#aip-scanner-setup)
+- [Running Sensitive Data Discovery](#running-sensitive-data-discovery)
+
+---
+## AIP Scanner Setup
 
 In this task we will install the AIP scanner binaries and create the Azure AD Applications necessary for authentication.
 
@@ -307,19 +273,15 @@ In this task we will install the AIP scanner binaries and create the Azure AD Ap
 
 The first step in configuring the AIP Scanner is to install the service and connect the database.  This is done with the Install-AIPScanner cmdlet that is provided by the AIP Client software.  The AIPScanner service account has been pre-staged in Active Directory for convenience.
 
-1. [] Switch to @lab.VirtualMachine(Scanner01).SelectLink and use the password +++@lab.VirtualMachine(Client01).Password+++.
+1. [] Switch to @lab.VirtualMachine(Scanner01).SelectLink and log in using the password +++@lab.VirtualMachine(Client01).Password+++.
 
-1. [] Right-click on the **PowerShell** icon in the taskbar and click on **Run as Administrator**.
+1. [] Open an **Administrative PowerShell Window** and type ```C:\Users\LabUser\Desktop\InstallScanner.ps1``` and press **Enter**. 
 
-	!IMAGE[7to6p334.jpg](\Media\7to6p334.jpg)
+1. [] In the popup box, click **OK** to accept the default of **Scanner01**.
 
-3. [] At the PowerShell prompt, click to type the code below 
+	> [!NOTE] We have preconfigured SQL Server on Scanner01 with a **default instance**. If using a **named instance** or **SQL Server Express**, you would populate this with **ServerName\\InstanceName** or **ServerName\\SqlExpress** respectively.
 
-   ```
-   $SQL = "Scanner01"
-   Install-AIPScanner -SQLServerInstance $SQL
-   ```
-3. [] When prompted, provide the credentials for the AIP scanner service account.
+3. [] When prompted, provide the credentials for the **local** AIP scanner service account.
 	
 	```Contoso\AIPScanner```
 
@@ -327,53 +289,60 @@ The first step in configuring the AIP Scanner is to install the service and conn
 
 	^IMAGE[Open Screenshot](\Media\pc9myg9x.jpg)
 
-	> [!knowledge] You should see a success message like the one below. 
+	> [!KNOWLEDGE] This script installs the AIP scanner Service account using the **local domain user** account provisioned for the AIP Scanner. This account will need to be provided **read** access to **all repositories** that need to be scanned during **discovery**.  
 	>
-	>!IMAGE[w7goqgop.jpg](\Media\w7goqgop.jpg)
+	> When you begin **classifying and labeling** files with the AIP scanner, this account will also need **write** access to the repositories, so this is something you should consider during rights assignment. 
 	>
+	> This script will run the code below. This script is available online at https://aka.ms/labscripts
+	>
+	> Add-Type -AssemblyName Microsoft.VisualBasic
+	> 
+	> $SQL = [Microsoft.VisualBasic.Interaction]::InputBox('Enter the name of your SQL Server or Server\Instance', 'SQL Server', "Scanner01")
+	>
+	> Install-AIPScanner -SQLServerInstance $SQL
+	
+	^IMAGE[Open Screenshot](\Media\w7goqgop.jpg)
 
 ### Creating Azure AD Applications for the AIP Scanner
 
-Now that you have installed the scanner bits, you need to get an Azure AD token for the scanner service account to authenticate so that it can run unattended. This requires registering both a Web app and a Native app in Azure Active Directory.  The commands below will do this in an automated fashion rather than needing to go into the Azure portal directly.
+Now that you have installed the scanner service, you need to get an Azure AD token for the scanner service account to authenticate so that it can run unattended. This requires registering both a Web app and a Native app in Azure Active Directory.  The commands below will do this in an automated fashion rather than needing to go into the Azure portal directly.
 
-1. [] In PowerShell, run ```Connect-AzureAD``` and use the username and password below. 
+1. [] Next, on the desktop, right-click on **GenerateAuthToken.ps1** and click **Run with PowerShell**.
+1. [] When prompted, provide the username and password below. 
 	
-	```@lab.CloudCredential(17).Username```
+	```@lab.CloudCredential(134).Username```
 	
-	```@lab.CloudCredential(17).Password```
-1. [] Next, click the **T** to **type the commands below** in the PowerShell window and press **Enter**. 
+	```@lab.CloudCredential(134).Password```
 
-    > [!NOTE] This will create a new Web App Registration, Native App Registration, and associated Service Principals in Azure AD.
+	> [!HINT] This will create a new **Web App Registration**, **Native App Registration**, and associated **Service Principals** in Azure AD. 
+	>
+	> Next, the script will output a new text file containing the **Set-AIPAuthentication** command and the **required values to generate the authentication token** for **any** AIP scanner server in an environment.
+	
+	> [!KNOWLEDGE] This script will run the code below. This script is available online at https://aka.ms/labscripts
+	>
+	> New-AzureADApplication -DisplayName AIPOnBehalfOf -ReplyUrls http://localhost
+	> $WebApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPOnBehalfOf'"
+	> New-AzureADServicePrincipal -AppId $WebApp.AppId
+	> $WebAppKey = New-Guid
+	> $Date = Get-Date
+	> New-AzureADApplicationPasswordCredential -ObjectId $WebApp.ObjectID -startDate $Date -endDate $Date.AddYears(1) -Value $WebAppKey.Guid -CustomKeyIdentifier "AIPClient"
+	>
+	> $AIPServicePrincipal = Get-AzureADServicePrincipal -All $true | ? {$_.DisplayName -eq 'AIPOnBehalfOf'}
+	> $AIPPermissions = $AIPServicePrincipal | select -expand Oauth2Permissions
+	> $Scope = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $AIPPermissions.Id,"Scope"
+	> $Access = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
+	> $Access.ResourceAppId = $WebApp.AppId
+	> $Access.ResourceAccess = $Scope
+	>
+	> New-AzureADApplication -DisplayName AIPClient -ReplyURLs http://localhost -RequiredResourceAccess $Access -PublicClient $true
+	> $NativeApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPClient'"
+	> New-AzureADServicePrincipal -AppId $NativeApp.AppId
+	>
+    > "Set-AIPAuthentication -WebAppID " + $WebApp.AppId + " -WebAppKey " + $WebAppKey.Guid + " -NativeAppID " + $NativeApp.AppId | Out-File ~\Desktop\Set-AIPAuthentication.txt
+	> Start ~\Desktop\Set-AIPAuthentication.txt
 
-    ```
-    New-AzureADApplication -DisplayName AIPOnBehalfOf -ReplyUrls http://localhost
-    $WebApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPOnBehalfOf'"
-    New-AzureADServicePrincipal -AppId $WebApp.AppId
-    $WebAppKey = New-Guid
-    $Date = Get-Date
-    New-AzureADApplicationPasswordCredential -ObjectId $WebApp.ObjectID -startDate $Date -endDate $Date.AddYears(1) -Value $WebAppKey.Guid -CustomKeyIdentifier "AIPClient"
-
-    $AIPServicePrincipal = Get-AzureADServicePrincipal -All $true | ? {$_.DisplayName -eq 'AIPOnBehalfOf'}
-    $AIPPermissions = $AIPServicePrincipal | select -expand Oauth2Permissions
-    $Scope = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $AIPPermissions.Id,"Scope"
-    $Access = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
-    $Access.ResourceAppId = $WebApp.AppId
-    $Access.ResourceAccess = $Scope
-
-     New-AzureADApplication -DisplayName AIPClient -ReplyURLs http://localhost -RequiredResourceAccess $Access -PublicClient $true
-     $NativeApp = Get-AzureADApplication -Filter "DisplayName eq 'AIPClient'"
-     New-AzureADServicePrincipal -AppId $NativeApp.AppId
-    ```
-
-3. [] Finally, we will output the Set-AIPAuthentication command by running the commands below and pressing **Enter**.
-
-
-    ```
-    "Set-AIPAuthentication -WebAppID " + $WebApp.AppId + " -WebAppKey " + $WebAppKey.Guid + " -NativeAppID " + $NativeApp.AppId | Out-File ~\Desktop\Set-AIPAuthentication.txt
-    Start ~\Desktop\Set-AIPAuthentication.txt
-    ```
 1. [] Leave the notepad window open in the background.
-1. [] Click on the Start menu and type ```PowerShell```, right-click on the PowerShell program, and click **Run as a different user**.
+1. [] **Click on the Start menu** and type ```PowerShell```, right-click on the PowerShell program, and click **Run as a different user**.
 
 	!IMAGE[zgt5ikxl.jpg](\Media\zgt5ikxl.jpg)
 
@@ -383,10 +352,10 @@ Now that you have installed the scanner bits, you need to get an Azure AD token 
 
 	```Somepass1```
 
-1. [] Restore the **Notepad** window and copy the **full Set-AIPAuthentication** command into this window from and run it.
+1. [] Return to the **Notepad** window and copy the **full Set-AIPAuthentication** command into this window and run it.
 1. [] When prompted, enter the username and password below:
 
-	```AIPScanner@@lab.CloudCredential(17).TenantName```
+	```AIPScanner@@lab.CloudCredential(134).TenantName```
 
 	```Somepass1```
 
@@ -399,14 +368,15 @@ Now that you have installed the scanner bits, you need to get an Azure AD token 
 	>[!knowledge] You will a message like the one below in the PowerShell window once complete.
 	>
 	>!IMAGE[y2bgsabe.jpg](\Media\y2bgsabe.jpg)
-1. [] **Close the current PowerShell window**.
-1. [] **In the admin PowerShell window** and type the command below.
+
+1. [] **Close the PowerShell window**.
+1. [] Next, in the **Admin PowerShell window**, run the command below.
 
 	```Restart-Service AIPScanner```
    
 ---
 
-## Configuring Repositories 
+## Configuring AIP Scanner Profile 
 [:arrow_up: Top](#configuring-aip-scanner-for-discovery)
 
 In this task, we will configure repositories to be scanned by the AIP scanner.  As previously mentioned, these can be any type of CIFS file shares including NAS devices sharing over the CIFS protocol.  Additionally, On premises SharePoint 2010, 2013, and 2016 document libraries and lists (attachements) can be scanned.  You can even scan entire SharePoint sites by providing the root URL of the site.  There are several optional 
