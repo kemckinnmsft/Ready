@@ -36,6 +36,34 @@ Microsoft 365 E5 Tenant credentials will be provided during the event.  If you w
 ---
 
 ===
+
+# Azure Information Protection
+[:arrow_left: Home](#introduction)
+## Overview
+
+Azure Information Protection (AIP) is a cloud-based solution that can help organizations to protect sensitive information by classifying and (optionally) encrypting documents and emails on Windows, Mac, and Mobile devices. This is done using an organization defined classification taxonomy made up of labels and sub-labels. These labels may be applied manually by users, or automatically by administrators via defined rules and conditions.
+
+The phases of AIP are shown in the graphic below.  
+
+!IMAGE[Phases.png](\Media\Phases.png)
+
+In this lab, we will guide you through addressing all of these phases using some of the newest features of AIP.  We first will perform Discovery using the AIP scanner. We recommend that all customers do this step as it only requires AIP P1 licensing and can help to show customers the risk they are currently facing so they can properly prioritize their security investments. 
+
+We will also show how to use the AIP Scanner in Enforce mode to take advantage of AIP P2 features like Automatic Conditions to help them Classify, Label, and Protect the discovered information easily.
+
+We will help you understand how to Enable and Publish labels in the Security and Compliance Center so they can be used with Mac, Mobile, ISVs (like Adobe PDF), and other unified clients.
+
+Finally, we will demonstrate how to use the new AIP Dashboards to leverage Azure Log Analytics to display actionable information on Usage, Activity, and Data Risk.
+
+!IMAGE[Two overlaying screenshots of the Azure Information Protection scanner's blade in the Azure portal. This blade provides dashboards that consolidate information for all deployed Azure Information Protection scanners, including health status, scan results, classification and policy settings, and more.](\Media\8324-image001.png)
+
+## Objectives
+
+This lab assumes that you are familiar with label and policy creation and that you have seen the operation of conditions in Office applications as these will not be demonstrated.  This lab will use the predefined labels and global policy populated in the demo tenants.
+
+---
+
+===
 # Lab Environment Configuration
 [:arrow_left: Home](#introduction)
 
@@ -174,58 +202,24 @@ For several of the exercises in this lab series, you will require an active subs
 
 	> [!NOTE] It may take a few minutes to process the request.
 
-1. [] While this is processing, you may continue to the next task.
-
-
-===
-
-# Azure Information Protection
-[:arrow_left: Home](#introduction)
-## Overview
-
-Azure Information Protection (AIP) is a cloud-based solution that can help organizations to protect sensitive information by classifying and (optionally) encrypting documents and emails on Windows, Mac, and Mobile devices. This is done using an organization defined classification taxonomy made up of labels and sub-labels. These labels may be applied manually by users, or automatically by administrators via defined rules and conditions.
-
-The phases of AIP are shown in the graphic below.  
-
-!IMAGE[Phases.png](\Media\Phases.png)
-
-In this lab, we will guide you through addressing all of these phases using some of the newest features of AIP.  We first will perform Discovery using the AIP scanner. We recommend that all customers do this step as it only requires AIP P1 licensing and can help to show customers the risk they are currently facing so they can properly prioritize their security investments. 
-
-We will also show how to use the AIP Scanner in Enforce mode to take advantage of AIP P2 features like Automatic Conditions to help them Classify, Label, and Protect the discovered information easily.
-
-We will help you understand how to Enable and Publish labels in the Security and Compliance Center so they can be used with Mac, Mobile, ISVs (like Adobe PDF), and other unified clients.
-
-Finally, we will demonstrate how to use the new AIP Dashboards to leverage Azure Log Analytics to display actionable information on Usage, Activity, and Data Risk.
-
-!IMAGE[Two overlaying screenshots of the Azure Information Protection scanner's blade in the Azure portal. This blade provides dashboards that consolidate information for all deployed Azure Information Protection scanners, including health status, scan results, classification and policy settings, and more.](\Media\8324-image001.png)
-
-## Objectives
-
-This lab assumes that you are familiar with label and policy creation and that you have seen the operation of conditions in Office applications as these will not be demonstrated.  This lab will use the predefined labels and global policy populated in the demo tenants.
-
 ---
 ## Configuring Azure Log Analytics 
 
 In order to collect log data from Azure Information Protection clients and services, you must first configure the log analytics workspace.
 
-1. [] Switch to @lab.VirtualMachine(Client01).SelectLink and log in with the password +++@lab.VirtualMachine(Client01).Password+++.
-1. [] In the InPrivate window, navigate to ```https://portal.azure.com/```
-	>
-	>^IMAGE[Open Screenshot](\Media\cznh7i2b.jpg)
-
-	> [!KNOWLEDGE] If necessary, log in using the username and password below:
-	>
-	>```@lab.CloudCredential(17).Username``` 
-	>
-	>```@lab.CloudCredential(17).Password```
-	
-1. [] After logging into the portal, type the word ```info``` into the **search bar** and press **Enter**, then click on **Azure Information Protection**. 
+1. [] In the Azure portal, type the word ```info``` into the **search bar** and press **Enter**, then click on **Azure Information Protection**. 
 
 	!IMAGE[2598c48n.jpg](\Media\2598c48n.jpg)
 	
 	> [!HINT] If you do not see the search bar at the top of the portal, click on the **Magnifying Glass** icon to expand it.
 	>
 	> !IMAGE[ny3fd3da.jpg](\Media\ny3fd3da.jpg)
+
+	> [!KNOWLEDGE] You should automatically be loggeed into the azure portal.  If not, navigate to ```https://portal.azure.com/``` and log in with the credentials below.
+	>
+	>```@lab.CloudCredential(17).Username``` 
+	>
+	>```@lab.CloudCredential(17).Password```
 
 1. [] In the Azure Information Protection blade, under **Manage**, click **Configure analytics (preview)**.
 
@@ -240,10 +234,15 @@ In order to collect log data from Azure Information Protection clients and servi
 	|Resource Group|```AIP-RG```|
 	|Location|**East US** (Or a location near the event)|
 
+	> [!HINT] The OMS Workspace name must be unique across all of Azure. The name is not relevant for this lab, so feel free to use random characters.
+
 	^IMAGE[Open Screenshot](\Media\5butui15.jpg)
 1. [] Next, back in the Configure analytics (preview) blade, **check the boxes** next to the **workspace** and next to **Enable Content Matches** and click **OK**.
 
 	!IMAGE[1547437013585](\Media\1547437013585.png)
+
+	> [!KNOWLEDGE] Checking the box next to **Enable Content Matches** allows the **actual matched content** to be stored in the Azure Log Analytics workspace.  This could include many types of sensitive information such as SSN, Credit Card Numbers, and Banking Information.  This is important to understand and is why access to this ALA workspace should be locked down appropriately.
+
 1. [] Click **Yes**, in the confirmation dialog.
 
 	!IMAGE[zgvmm4el.jpg](\Media\zgvmm4el.jpg)
