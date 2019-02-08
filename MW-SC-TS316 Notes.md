@@ -37,7 +37,7 @@
 
 ### Shubha
 
-- We (had a discussion with our local TSP/CxE, read the DAG?) and they recommend using the default Microsoft Classification Taxonomy. Since we don't have a taxonomy at Contoso yet, let's start with that.
+- I just read a new post about the AIP Deployment Aceleration Guide on the AIP team blog and they recommend using the default Microsoft Classification Taxonomy. Since we don't have a taxonomy at Contoso yet, let's start with that.
     - _Switch to Client01_
     - _Reviews Taxonomy in AIP portal_
 
