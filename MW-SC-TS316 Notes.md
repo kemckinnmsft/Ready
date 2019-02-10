@@ -70,7 +70,7 @@
 ### Shubha
 
 - Actually, yes. Because we have AIP P2, we can create conditions to recommend or automatically classify well defined sensitive data types
-- Based on the Discovery data collected by the scanner, we can see Recommendations in the AIP console and directly add conditions to labels.
+- I spoke to our CxE and got us added to the private preview of the recommendations dashboard. Based on the Discovery data collected by the scanner, we can see Recommendations in the AIP console and directly add conditions to labels.
     - _Click on Recommendations (Preview)_
     - _Click on US SSN_
     - Should we create recommended or automatic conditions?
