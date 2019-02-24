@@ -166,29 +166,12 @@
     - _Send email with sensitive content to external account kemckinnmsft@gmail.com_
     - _Open mail on Mac VM to show OME experience_
 
-## Conditional Access
-
-### Mavi
-
-- So with credential theft being so prevalent today, is there anything we can do to ensure that our users are actually who they say they are before they open protected content?
-
-### Shubha
-
-- Absolutely! AIP is one of the applications available to be secured via Conditional Access.  That way, when users open protected content they will be prompted to authenticate.
-    - _Log into AAD Conditional Access panel and configure CA policy_
-    - Now that we have that in place, we can clear our AIP and Windows Auth tokens and attempt to open the protected content
-    - _On Client01 Reset AIP client and delete ADAL credentials_
-    - _Open Test HC.docx on desktop_
-    - _Log in as adams@aipdemo.com/pass@word1 and enter code from Kevin's text_
-
 ## Review Analytics
 
 ### Denis
 
 - Let's take a look at the new AIP Analytics dashboards and see what information we have gathered
     - _Switch to Client01 and Open dashboards and explain features_
-
-
 
 ### Mavi
 
